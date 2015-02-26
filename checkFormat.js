@@ -110,6 +110,8 @@ checkSpecial 判断值是否为特殊值
 
   if(typeof(module)!=="undefined"){
     module.exports=checkFormat;
-  }else window.checkFormat=checkFormat;
+  }else if(typeof(window)!=="undefined"){
+    window.checkFormat=checkFormat;
+  }else throw new error('未知的运行环境');
 
 })();
