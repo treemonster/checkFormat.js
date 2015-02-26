@@ -1,7 +1,7 @@
 /*
 自定义格式校验器
 git: https://github.com/treemonster/checkFormat.js
-主要用于批量比较json等复杂结构的js内容的格式
+用于批量处理json等复杂结构的js内容格式是否符合预计标准
 */
 
 (function(){
