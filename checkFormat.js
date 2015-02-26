@@ -19,12 +19,17 @@ checkNumber 把需要检测的值强制转换成数字，并且比较边界情�
 ",200.12]" 小于等于200.12
 ",200.12)" 小于200.12
 "," 不比较边界情况，但是需要判断强制转换后不是NaN
+
+如果最后带+，则会把强制转换后的值覆盖原始值:
+"[123.001,200.12)+" 大于等于123.001，小于200.12，并且覆盖原始值
+
 */
 tester.checkNumber=function(needCheck,key,checkRegExp){
-  var num=needCheck[key]*=1;
-  var number_test=/^(?:(?:([(\[])(-{0,1}\d*(?:\.\d|\d\.|\d)\d*)){0,1}),(?:(?:(-{0,1}\d*(?:\.\d|\d\.|\d)\d*)([)\]])){0,1})$/;
-  return number_test.test(checkRegExp) && checkRegExp.replace(number_test,function(all,a,b,c,d){
+  var num=needCheck[key]*1;
+  var number_test=/^(?:(?:([(\[])(-{0,1}\d*(?:\.\d|\d\.|\d)\d*)){0,1}),(?:(?:(-{0,1}\d*(?:\.\d|\d\.|\d)\d*)([)\]])){0,1})(\+{0,1})$/;
+  return number_test.test(checkRegExp) && checkRegExp.replace(number_test,function(all,a,b,c,d,e){
     b*=1;c*=1;
+    if(e)needCheck[key]=num;
     var meet= !isNaN(num);
     if(a!==undefined)
       if(a==='[')meet&=b<=num;
@@ -34,6 +39,29 @@ tester.checkNumber=function(needCheck,key,checkRegExp){
       else meet&=c>num;
     if(meet)return 'TRUE';
   })==='TRUE';
+};
+
+/*
+checkSpecial 判断值是否为特殊值
+'nan'           强制转换为数字，返回是否为NaN
+'nan+'          强制转换为数字，并覆盖原始值，返回是否为NaN
+'NaN'           返回是否为NaN
+'undefined'     返回是否为undefined
+'null'          返回是否为null
+'[]'            返回是否为0长度数组
+'{}'            返回是否为空对象
+*/
+tester.checkSpecial=function(needCheck,key,checkRegExp){
+  var nk=needCheck[key];
+  switch(checkRegExp){
+    case 'nan':return isNaN(nk*1);
+    case 'nan+':return isNaN(needCheck[key]*=1);
+    case 'NaN':return isNaN(nk);
+    case 'undefined':return nk===undefined;
+    case 'null':return nk===null;
+    case '[]':return is(nk,Array) && !nk.length;
+    case '{}':return is(nk,Object) && !Object.keys(nk).length;
+  }
 };
 
 var checkFormat=function(needCheck,format){
@@ -50,7 +78,6 @@ var checkFormat=function(needCheck,format){
     case Function:case RegExp:case Number:
     case Date:case Blob:
       if(!is(needCheck[check],checkData))return false;
-      //if(checkData!==needCheck[check].constructor)return false;
       break;
     }
     switch(checkData.constructor){
@@ -73,6 +100,8 @@ var checkFormat=function(needCheck,format){
         if(!checkFormat(needCheck[check][i],checkData[i]))return false;
       }
       break;
+    case Function:
+      if(!checkData(needCheck[check]))return false;
     default: return false;
     }
   }
