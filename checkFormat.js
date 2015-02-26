@@ -73,6 +73,7 @@ var checkFormat=function(needCheck,format){
         if(!checkFormat(needCheck[check][i],checkData[i]))return false;
       }
       break;
+    default: return false;
     }
   }
   return true;
