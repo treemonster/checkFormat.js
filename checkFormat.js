@@ -67,7 +67,7 @@ checkSpecial 判断值是否为特殊值
   };
 
   var checkFormat=function(needCheck,format){
-    if(!is(format,Object))return checkFormat(
+    if(!is(format,Object) && !is(format,Array))return checkFormat(
       {check:needCheck},
       {check:format}
     );
@@ -94,7 +94,7 @@ checkSpecial 判断值是否为特殊值
           if(matched|=tester[checker](needCheck,check,checkData))break;
         if(!matched)return false;
         break;
-        //如果是数组或对象，则每个元素分别处理
+      //如果是数组或对象，则每个元素分别处理
       case Array:case Object:
         if(!is(needCheck[check],checkData.constructor))return false;
         for(var i in checkData)
