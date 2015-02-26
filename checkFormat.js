@@ -97,8 +97,7 @@ checkSpecial 判断值是否为特殊值
       //如果是数组或对象，则每个元素分别处理
       case Array:case Object:
         if(!is(needCheck[check],checkData.constructor))return false;
-        for(var i in checkData)
-          if(!checkFormat(needCheck[check][i],checkData[i]))return false;
+        if(!checkFormat(needCheck[check],checkData))return false;
         break;
       case Function:
         if(!checkData(needCheck[check]))return false;
