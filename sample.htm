@@ -8,7 +8,7 @@ return checkFormat(324,Number);// 判断324是否是数字~~~
 return checkFormat('534','[-10,200)');// 比较数字字符串是否在 -10闭区间到200开区间中~~~
 return checkFormat('534','[-10,600)');// 比较数字字符串是否在 -10闭区间到600开区间中~~~
 var obj={x:'22'};
-return checkFormat(obj,{x:'[0,22]+'}) && obj.x===22; // 判断obj.x是否在区间中，并强制转换成数字~~~
+return checkFormat(obj,{x:'[0,22]+'}) & obj.x===22; // 判断obj.x是否在区间中，并强制转换成数字~~~
 var obj={
   a:'test',
   b:'213',
