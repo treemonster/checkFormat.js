@@ -38,8 +38,15 @@ onerror=function(){
 var js=show.value.split('~~~');
 show.value='';
 js.forEach(function(a){
-	if(/^\s*$/.test(a))return;
-	show.value+=['',a,'','Result: '+new Function(a)(),'','====================',''].join('\n').replace(/\r*\n\r*/g,'\n ');
+  if(/^\s*$/.test(a))return;
+  show.value+=[
+    '',
+    a,'',
+    'Result: '+new Function(a)(),
+    '',
+    '====================',
+    ''
+    ].join('\n').replace(/\r*\n\r*/g,'\n ');
 });
 
 
