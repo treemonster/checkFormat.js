@@ -1,0 +1,46 @@
+<meta charset='utf-8' />
+<script src='checkFormat.js'></script>
+<div id='result'></div>
+<textarea id='show' style='width:100%; height:100%;'>
+return checkFormat('文本测试',String);// 比较字符串是否为字符串~~~
+return checkFormat('文本测试',Number);// 比较字符串是否为数字~~~
+return checkFormat(324,Number);// 判断324是否是数字~~~
+return checkFormat('534','[-10,200)');// 比较数字字符串是否在 -10闭区间到200开区间中~~~
+return checkFormat('534','[-10,600)');// 比较数字字符串是否在 -10闭区间到600开区间中~~~
+var obj={x:'22'};
+return checkFormat(obj,{x:'[0,22]+'}) && obj.x===22; // 判断obj.x是否在区间中，并强制转换成数字~~~
+var obj={
+  a:'test',
+  b:'213',
+  c:'a'*1,
+  d:new Date,
+  e:[{x:2,y:22},[
+    '4234',
+    '1122'
+  ]]
+};
+return checkFormat(obj,{
+  a:String,
+  b:'[100,300)+',
+  c:'NaN',
+  d:Date,
+  e:[Object,[
+    ',+',
+    ','
+  ]]
+})+'\n'+JSON.stringify(obj);// 综合判断，需要传入同样结构~~~
+</textarea>
+<script>
+onerror=function(){
+  alert('请使用现代浏览器查看实例！');
+  close();
+};
+var js=show.value.split('~~~');
+show.value='';
+js.forEach(function(a){
+	if(/^\s*$/.test(a))return;
+	show.value+=['',a,'','Result: '+new Function(a)(),'','====================',''].join('\n').replace(/\r*\n\r*/g,'\n ');
+});
+
+
+</script>
