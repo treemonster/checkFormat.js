@@ -78,7 +78,7 @@ checkSpecial 判断值是否为特殊值
       switch(checkData){
       case String:case Array:case Object:
       case Function:case RegExp:case Number:
-      case Date:case Blob:
+      case Date:
         if(!is(needCheck[check],checkData))return false;
         continue;
       }
