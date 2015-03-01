@@ -1,31 +1,13 @@
 /*
-自定义格式校验器
-git: https://github.com/treemonster/checkFormat.js
-主要用于批量比较json等复杂结构的js内容的格式
+Simple format compare tool
+code by treemonster
+git: https://github.com/treemonster/compare.js
 */
-
 (function(){
-
   var is=function(a,b){
     return a!==undefined && a.constructor===b;
   };
-
   var tester={};
-
-/*
-checkNumber 把需要检测的值强制转换成数字，并且比较边界情况
-"[123.001,200.12)" 大于等于123.001，小于200.12
-"[123.001,200.12]" 大于等于123.001，小于等于200.12
-"[123.001," 大于等于123.001
-"(123.001," 大于123.001
-",200.12]" 小于等于200.12
-",200.12)" 小于200.12
-"," 不比较边界情况，但是需要判断强制转换后不是NaN
-
-如果最后带+，则会把强制转换后的值覆盖原始值:
-"[123.001,200.12)+" 大于等于123.001，小于200.12，并且覆盖原始值
-
-*/
   tester.checkNumber=function(needCheck,key,checkRegExp){
     var num=needCheck[key]*1;
     var number_test=/^(?:(?:([(\[])(-{0,1}\d*(?:\.\d|\d\.|\d)\d*)){0,1}),(?:(?:(-{0,1}\d*(?:\.\d|\d\.|\d)\d*)([)\]])){0,1})(\+{0,1})$/;
@@ -42,17 +24,6 @@ checkNumber 把需要检测的值强制转换成数字，并且比较边界情�
       if(meet)return 'TRUE';
     })==='TRUE';
   };
-
-/*
-checkSpecial 判断值是否为特殊值
-'nan'           强制转换为数字，返回是否为NaN
-'nan+'          强制转换为数字，并覆盖原始值，返回是否为NaN
-'NaN'           返回是否为NaN
-'undefined'     返回是否为undefined
-'null'          返回是否为null
-'[]'            返回是否为0长度数组
-'{}'            返回是否为空对象
-*/
   tester.checkSpecial=function(needCheck,key,checkRegExp){
     var nk=needCheck[key];
     switch(checkRegExp){
@@ -65,39 +36,34 @@ checkSpecial 判断值是否为特殊值
       case '{}':return is(nk,Object) && !Object.keys(nk).length;
     }
   };
-
-  var checkFormat=function(needCheck,format){
-    if(!is(format,Object) && !is(format,Array))return checkFormat(
+  var compare=function(needCheck,format){
+    if(!is(format,Object) && !is(format,Array))return compare(
       {check:needCheck},
       {check:format}
     );
     var check,checkData;
     for(var check in format){
       checkData=format[check];
-      //如果format里的值为原型，则比较needCheck里值的原型是否一致
       switch(checkData){
       case String:case Array:case Object:
       case Function:case RegExp:case Number:
-      case Date:
+      case Date:case Blob:
         if(!is(needCheck[check],checkData))return false;
         continue;
       }
       switch(checkData.constructor){
-      //如果format里的值为正则表达式，则把needCheck里值变成字符串之后，检测是否匹配
       case RegExp:
         if(!checkData.test(needCheck[check]+''))return false;
         break;
-      //如果是字符串格式，则对应各种情况进行解析
       case String:
         var matched=false;
         for(var checker in tester)
           if(matched|=tester[checker](needCheck,check,checkData))break;
         if(!matched)return false;
         break;
-      //如果是数组或对象，则每个元素分别处理
       case Array:case Object:
         if(!is(needCheck[check],checkData.constructor))return false;
-        if(!checkFormat(needCheck[check],checkData))return false;
+        if(!compare(needCheck[check],checkData))return false;
         break;
       case Function:
         if(!checkData(needCheck[check]))return false;
@@ -106,11 +72,14 @@ checkSpecial 判断值是否为特殊值
     }
     return true;
   };
-
-  if(typeof(module)!=="undefined"){
-    module.exports=checkFormat;
-  }else if(typeof(window)!=="undefined"){
-    window.checkFormat=checkFormat;
-  }else throw new error('未知的运行环境');
-
+  for(var types=[
+  'String','Array','Object',
+  'Function','RegExp','Number',
+  'Date','Blob'
+  ],i=0;i<types.length;i++){
+    if(!this[types[i]])this[types[i]]={};
+  }
+  if(typeof(module)!=="undefined")module.exports=compare;
+  else if(typeof(this)!=="undefined")this.compare=compare;
+  else throw new error('Unknown environment');
 })();
