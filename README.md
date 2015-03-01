@@ -1,5 +1,5 @@
 # compare.js
-'''javascript
+```javascript
 
 // 12>=10 is true, 12<20 is true, so result is true
 console.log(compare(12,'[10,20)'));
@@ -24,4 +24,4 @@ var tester={
 };
 console.log(compare(data,tester)); //true
 console.log(data); // now string '123' is become number 123
-'''
+```
